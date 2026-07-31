@@ -53,13 +53,14 @@ Alternatives, if you prefer:
 Hardware bootloader entry: unplug the USB cable, hold **Space + B**, plug back in
 while holding. The board enumerates straight into DFU.
 
-### If dfu-util says "Cannot open DFU device" (permissions)
+### If dfu-util says "Cannot open DFU device ... LIBUSB_ERROR_ACCESS" (permissions)
 
-Install QMK's udev rules once (needs your password):
+Install QMK's udev rules once via the official installer (needs your password;
+it downloads the current rules + `qmk_id` helper from github.com/qmk/qmk_udev,
+installs them to `/etc/udev/rules.d/` and `/usr/lib/udev/`, and reloads udev):
 
 ```bash
-sudo cp util/udev/*.rules /etc/udev/rules.d/
-sudo udevadm control --reload-rules && sudo udevadm trigger
+util/install_udev.sh
 ```
 
 ## Keeping the fork up to date
