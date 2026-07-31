@@ -14,13 +14,21 @@ https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases, extract to
 
 ## Build
 
+**Every new shell needs the build PATH first** — otherwise `make` fails with
+`/bin/sh: 1: qmk: not found` and `No rule to make target`:
+
 ```bash
-export PATH="$HOME/tools/xpack-arm-none-eabi-gcc-10.3.1-2.3/bin:$HOME/tools/qmkvenv/bin:$PATH"
 cd /mnt/data/Backup/Code/me/qmk_firmware
+source jqs_docs/env.sh       # puts the ARM toolchain + qmk CLI on PATH
 make gmmk/pro/rev1/ansi:jqs
 ```
 
 Output: `gmmk_pro_rev1_ansi_jqs.bin` in the repo root (DFU-suffixed, ready to flash).
+
+A `WARNING: Some git submodules are out of date` banner is expected and harmless —
+it refers to submodules for other platforms (LUFA/AVR, pico-sdk/RP2040) that this
+STM32 board doesn't use. Only `lib/chibios`, `lib/chibios-contrib`, and
+`lib/printf` matter here, and those are synced.
 
 ## Flash — no second keyboard needed
 
