@@ -3,10 +3,12 @@
 The three features from the keymap README's "v2" list, with concrete steps on
 modern (2026) QMK. All work happens in `keyboards/gmmk/pro/rev1/ansi/keymaps/jqs/`.
 
-> **Status 2026-07-31:** #1 and #2 are implemented and flashed-ready (KC_CCCV on
-> Fn+C; white heatmap as a custom effect, last in the effect cycle — Fn+Down from
-> Solid Color wraps straight to it). #3 deferred — the numpad layer may become a
-> physical GMMK Numpad instead. Static red is also now the firmware default.
+> **Status 2026-07-31 (end of day):** #1 and #2 implemented, flashed, and
+> confirmed working. KC_CCCV on Fn+C (tap = paste, hold = copy). The heatmap
+> renders white heat over the configured red base and is the power-on default;
+> Fn+Up wraps to plain Solid Color, Fn+Down returns. #3 deferred — the numpad
+> layer may become a physical GMMK Numpad instead. Remember the VIA gotcha:
+> key changes need the bootmagic-reset flash (see build_and_flash.md).
 
 ---
 

@@ -48,6 +48,21 @@ Alternatives, if you prefer:
 - Manual flash of an existing .bin:
   `dfu-util -a 0 -s 0x08000000:leave -D gmmk_pro_rev1_ansi_jqs.bin`
 
+### After changing keys in keymap.c: flash with an EEPROM reset
+
+VIA keeps the *running* keymap in EEPROM, so a plain reflash won't pick up key
+changes — the board keeps serving the old map. Instead of pressing Fn+`\`,
+reset EEPROM and enter the bootloader in one step:
+
+1. Run `make gmmk/pro/rev1/ansi:jqs:flash` and wait for "Waiting for DFU device"
+2. Unplug the keyboard
+3. **Hold ESC** and plug it back in while holding
+
+Bootmagic clears the EEPROM (dynamic keymap, RGB settings — the compiled-in
+defaults apply fresh on boot) and lands in the bootloader for the waiting
+flasher. Use the plain Fn+`\` flow only for firmware-logic changes that don't
+touch the key layout.
+
 ### If the firmware is too broken to reach Fn+`\`
 
 Hardware bootloader entry: unplug the USB cable, hold **Space + B**, plug back in
