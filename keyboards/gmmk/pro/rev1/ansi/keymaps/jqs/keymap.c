@@ -19,12 +19,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [1] = LAYOUT(
-        RGB_TOG, KC_MYCM, KC_WHOM, KC_CALC, KC_MSEL, _______, _______, _______, _______, KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP, DEBUG,            _______,
+        RM_TOGG, KC_MYCM, KC_WHOM, KC_CALC, KC_MSEL, _______, _______, _______, _______, KC_MPRV, KC_MNXT, KC_MPLY, KC_MSTP, DB_TOGG,          _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
-        _______, RGB_HUI, RGB_SAI, RGB_VAI, _______, _______, _______, _______, _______, _______, _______, _______, _______, RESET,            _______,
-        _______, RGB_HUD, RGB_SAD, RGB_VAD, _______, _______, _______, _______, _______, _______, _______, _______,          _______,          _______,
-        _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, RGB_MOD, _______,
-        _______, _______, _______,                            NK_TOGG,                            _______, _______, _______, RGB_SPD, RGB_RMOD, RGB_SPI
+        _______, RM_HUEU, RM_SATU, RM_VALU, _______, _______, _______, _______, _______, _______, _______, _______, _______, QK_BOOT,          _______,
+        _______, RM_HUED, RM_SATD, RM_VALD, _______, _______, _______, _______, _______, _______, _______, _______,          _______,          _______,
+        _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, RM_NEXT, _______,
+        _______, _______, _______,                            NK_TOGG,                            _______, _______, _______, RM_SPDD, RM_PREV, RM_SPDU
     ),
     [2] = LAYOUT(
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
@@ -95,20 +95,21 @@ int leftAll[] = { 67, 70, 73, 76, 80, 83, 87, 91 };
 int leftBorder[] = { 67, 91 };
 int rightAll[] = { 68, 71, 74, 77, 81, 84, 88, 92 };
 
-void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    if (IS_HOST_LED_ON(USB_LED_CAPS_LOCK)) {
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    if (host_keyboard_led_state().caps_lock) {
         rgb_matrix_set_color_all(RGB_WHITE);
         for (int i = 0; i < 2; i++) {
             rgb_matrix_set_color(numCaps[i], 255,255,255);
         }
     } else {
-        HSV hsv = {thisHue, thisSat, thisVal};
-        RGB rgb = hsv_to_rgb(hsv);
+        hsv_t hsv = {thisHue, thisSat, thisVal};
+        rgb_t rgb = hsv_to_rgb(hsv);
         for (int i = 0; i < SIZE; i++) {
             rgb_matrix_set_color(leftAll[i], rgb.r, rgb.g, rgb.b);
             rgb_matrix_set_color(rightAll[i], rgb.r, rgb.g, rgb.b);
         }
     }
+    return false;
 }
 
 
