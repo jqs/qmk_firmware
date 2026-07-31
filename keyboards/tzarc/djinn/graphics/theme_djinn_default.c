@@ -1,6 +1,5 @@
 // Copyright 2018-2022 Nick Brassel (@tzarc)
 // SPDX-License-Identifier: GPL-2.0-or-later
-#include QMK_KEYBOARD_H
 #include <hal.h>
 #include <string.h>
 #include <ctype.h>
@@ -32,49 +31,6 @@ static painter_image_handle_t lock_scrl_off;
 static painter_font_handle_t  thintel;
 
 //----------------------------------------------------------
-// RGB Matrix naming
-#if defined(RGB_MATRIX_ENABLE)
-#    include <rgb_matrix.h>
-
-#    if defined(RGB_MATRIX_EFFECT)
-#        undef RGB_MATRIX_EFFECT
-#    endif // defined(RGB_MATRIX_EFFECT)
-
-#    define RGB_MATRIX_EFFECT(x) RGB_MATRIX_EFFECT_##x,
-enum {
-    RGB_MATRIX_EFFECT_NONE,
-#    include "rgb_matrix_effects.inc"
-#    undef RGB_MATRIX_EFFECT
-#    ifdef RGB_MATRIX_CUSTOM_KB
-#        include "rgb_matrix_kb.inc"
-#    endif
-#    ifdef RGB_MATRIX_CUSTOM_USER
-#        include "rgb_matrix_user.inc"
-#    endif
-};
-
-#    define RGB_MATRIX_EFFECT(x)    \
-        case RGB_MATRIX_EFFECT_##x: \
-            return #x;
-const char *rgb_matrix_name(uint8_t effect) {
-    switch (effect) {
-        case RGB_MATRIX_EFFECT_NONE:
-            return "NONE";
-#    include "rgb_matrix_effects.inc"
-#    undef RGB_MATRIX_EFFECT
-#    ifdef RGB_MATRIX_CUSTOM_KB
-#        include "rgb_matrix_kb.inc"
-#    endif
-#    ifdef RGB_MATRIX_CUSTOM_USER
-#        include "rgb_matrix_user.inc"
-#    endif
-        default:
-            return "UNKNOWN";
-    }
-}
-#endif // defined(RGB_MATRIX_ENABLE)
-
-//----------------------------------------------------------
 // UI Initialisation
 void keyboard_post_init_display(void) {
     djinn_logo    = qp_load_image_mem(gfx_djinn);
@@ -89,8 +45,8 @@ void keyboard_post_init_display(void) {
 
 //----------------------------------------------------------
 // UI Drawing
-void draw_ui_user(void) {
-    bool            hue_redraw = false;
+void draw_ui_user(bool force_redraw) {
+    bool            hue_redraw = force_redraw;
     static uint16_t last_hue   = 0xFFFF;
 #if defined(RGB_MATRIX_ENABLE)
     uint16_t curr_hue = rgb_matrix_get_hue();
@@ -158,7 +114,7 @@ void draw_ui_user(void) {
         if (hue_redraw || rgb_effect_redraw) {
             static int max_rgb_xpos = 0;
             xpos                    = 16;
-            snprintf(buf, sizeof(buf), "rgb: %s", rgb_matrix_name(curr_effect));
+            snprintf(buf, sizeof(buf), "rgb: %s", rgb_matrix_get_mode_name(curr_effect));
 
             for (int i = 5; i < sizeof(buf); ++i) {
                 if (buf[i] == 0)

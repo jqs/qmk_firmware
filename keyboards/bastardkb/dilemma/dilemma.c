@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2020 Christopher Courtney <drashna@live.com> (@drashna)
  * Copyright 2021 Quentin LEBASTARD <qlebastard@gmail.com>
  * Copyright 2022 Charly Delay <charly@codesink.dev> (@0xcharly)
@@ -176,7 +176,6 @@ void dilemma_set_pointer_dragscroll_enabled(bool enable) {
 
 void pointing_device_init_kb(void) {
     maybe_update_pointing_device_cpi(&g_dilemma_config);
-    pointing_device_init_user();
 }
 
 /**
@@ -308,7 +307,7 @@ bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
 #        endif // !NO_DILEMMA_KEYCODES
 #    endif     // POINTING_DEVICE_ENABLE
     debug_dilemma_config_to_console(&g_dilemma_config);
-    if ((keycode >= POINTER_DEFAULT_DPI_FORWARD && keycode < DILEMMA_SAFE_RANGE) || IS_MOUSEKEY(keycode)) {
+    if (IS_QK_KB(keycode) || IS_MOUSEKEY(keycode)) {
         debug_dilemma_config_to_console(&g_dilemma_config);
     }
     return true;
@@ -316,7 +315,7 @@ bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
 
 void eeconfig_init_kb(void) {
     g_dilemma_config.raw                 = 0;
-    g_dilemma_config.pointer_default_dpi = 4;
+    g_dilemma_config.pointer_default_dpi = 3; // DPI=1000
     write_dilemma_config_to_eeprom(&g_dilemma_config);
     maybe_update_pointing_device_cpi(&g_dilemma_config);
     eeconfig_init_user();
@@ -327,3 +326,19 @@ void matrix_init_kb(void) {
     matrix_init_user();
 }
 #endif // POINTING_DEVICE_ENABLE
+
+bool shutdown_kb(bool jump_to_bootloader) {
+    if (!shutdown_user(jump_to_bootloader)) {
+        return false;
+    }
+#ifdef RGBLIGHT_ENABLE
+    rgblight_enable_noeeprom();
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+    rgblight_setrgb(RGB_RED);
+#endif // RGBLIGHT_ENABLE
+#ifdef RGB_MATRIX_ENABLE
+    rgb_matrix_set_color_all(RGB_RED);
+    rgb_matrix_update_pwm_buffers();
+#endif // RGB_MATRIX_ENABLE
+    return true;
+}
