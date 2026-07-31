@@ -1,5 +1,9 @@
 #include QMK_KEYBOARD_H
 
+enum custom_keycodes {
+    KC_CCCV = SAFE_RANGE,   // hold: copy, tap: paste
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 //      ESC      F1       F2       F3       F4       F5       F6       F7       F8       F9       F10      F11      F12	     Del           Rotary(Mute)
@@ -23,7 +27,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______,
         _______, RM_HUEU, RM_SATU, RM_VALU, _______, _______, _______, _______, _______, _______, _______, _______, _______, QK_BOOT,          _______,
         _______, RM_HUED, RM_SATD, RM_VALD, _______, _______, _______, _______, _______, _______, _______, _______,          _______,          _______,
-        _______,          _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, RM_NEXT, _______,
+        _______,          _______, _______, KC_CCCV, _______, _______, _______, _______, _______, _______, _______,          _______, RM_NEXT, _______,
         _______, _______, _______,                            NK_TOGG,                            _______, _______, _______, RM_SPDD, RM_PREV, RM_SPDU
     ),
     [2] = LAYOUT(
@@ -35,6 +39,38 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______, _______
     )
 };
+static uint16_t cccv_timer;
+
+#ifdef RGB_MATRIX_CUSTOM_USER
+// Defined in quantum/rgb_matrix/animations/typing_heatmap_anim.h; not exposed
+// in a header. Feeds heat (with neighbor spread) into g_rgb_frame_buffer.
+extern void process_rgb_matrix_typing_heatmap(uint8_t row, uint8_t col);
+#endif
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+#ifdef RGB_MATRIX_CUSTOM_USER
+    // Core only feeds the framebuffer while the stock heatmap is active, so
+    // feed it ourselves when the white variant is the current effect.
+    if (record->event.pressed && rgb_matrix_get_mode() == RGB_MATRIX_CUSTOM_WHITE_HEATMAP) {
+        process_rgb_matrix_typing_heatmap(record->event.key.row, record->event.key.col);
+    }
+#endif
+    switch (keycode) {
+        case KC_CCCV:
+            if (record->event.pressed) {
+                cccv_timer = timer_read();
+            } else {
+                if (timer_elapsed(cccv_timer) > TAPPING_TERM) {
+                    tap_code16(LCTL(KC_C));   // held: copy
+                } else {
+                    tap_code16(LCTL(KC_V));   // tapped: paste
+                }
+            }
+            return false;
+    }
+    return true;
+}
+
 uint8_t thisHue = 0;
 uint8_t thisSat = 255;
 uint8_t thisVal = 255;
