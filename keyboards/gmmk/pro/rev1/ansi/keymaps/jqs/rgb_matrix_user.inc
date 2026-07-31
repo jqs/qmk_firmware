@@ -1,7 +1,8 @@
-// White typing heatmap: the stock TYPING_HEATMAP render loop, but heat maps to
-// white brightness (sat 0) instead of a blue-to-red hue shift. Heat is fed from
-// process_record_user in keymap.c — core only feeds heat while the stock
-// effect's mode is active.
+// White-over-solid typing heatmap: every key shows the configured matrix color
+// (default: red) and heat desaturates it toward white at the same brightness,
+// fading back as the key cools. Uses the stock TYPING_HEATMAP's framebuffer,
+// spread, and decay; heat is fed from process_record_user in keymap.c — core
+// only feeds heat while the stock effect's mode is active.
 RGB_MATRIX_EFFECT(WHITE_HEATMAP)
 
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
@@ -34,7 +35,8 @@ static bool WHITE_HEATMAP(effect_params_t* params) {
                 uint8_t val = g_rgb_frame_buffer[row][col];
                 if (!HAS_ANY_FLAGS(g_led_config.flags[g_led_config.matrix_co[row][col]], params->flags)) continue;
 
-                hsv_t hsv = {0, 0, scale8((qadd8(170, val) - 170) * 3, rgb_matrix_config.hsv.v)};
+                uint8_t whiteness = (qadd8(170, val) - 170) * 3; // heat curve: val 0..85+ -> 0..255
+                hsv_t   hsv = {rgb_matrix_config.hsv.h, scale8(rgb_matrix_config.hsv.s, 255 - whiteness), rgb_matrix_config.hsv.v};
                 rgb_t rgb = rgb_matrix_hsv_to_rgb(hsv);
                 rgb_matrix_set_color(g_led_config.matrix_co[row][col], rgb.r, rgb.g, rgb.b);
 
