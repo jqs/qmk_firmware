@@ -87,10 +87,31 @@ void encoder_action_hsv_change(bool clockwise, uint8_t hueChange, uint8_t satCha
     }            
 }
 
+// Super Alt-Tab: Fn + knob cycles windows; Alt auto-releases after idle.
+#define ALT_TAB_TIMEOUT_MS 1000
+static bool     alt_tab_active = false;
+static uint16_t alt_tab_timer;
+
+void housekeeping_task_user(void) {
+    if (alt_tab_active && timer_elapsed(alt_tab_timer) > ALT_TAB_TIMEOUT_MS) {
+        unregister_code(KC_LALT);
+        alt_tab_active = false;
+    }
+}
+
 // #ifdef ENCODER_ENABLE
 bool encoder_update_user(uint8_t index, bool clockwise) {
      uint8_t mods_state = get_mods();
 
+    if (get_highest_layer(layer_state) == 1) {
+        if (!alt_tab_active) {
+            alt_tab_active = true;
+            register_code(KC_LALT);
+        }
+        alt_tab_timer = timer_read();
+        tap_code16(clockwise ? KC_TAB : S(KC_TAB));
+        return false;
+    }
     if (mods_state & MOD_BIT(KC_LCTL)) {
         encoder_action_hsv_change(clockwise, 2, 0, 0); // Hue change
     } else if (mods_state & MOD_BIT(KC_LSFT)) {
@@ -144,6 +165,13 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             rgb_matrix_set_color(leftAll[i], rgb.r, rgb.g, rgb.b);
             rgb_matrix_set_color(rightAll[i], rgb.r, rgb.g, rgb.b);
         }
+#ifdef CAPS_WORD_ENABLE
+        if (is_caps_word_on()) {
+            for (int i = 0; i < 3; i++) {
+                rgb_matrix_set_color(lockCaps[i], 255, 255, 255);
+            }
+        }
+#endif
     }
     return false;
 }

@@ -16,6 +16,13 @@ v2
 - Layer keys (Fn & Numpad) light up when layer is selected
   - deferred; numpad layer may be replaced by an actual GMMK Numpad
 
+v3 (2026-08-01)
+- Super Alt-Tab: hold Fn and rotate the knob to cycle windows (counter-
+  clockwise = backwards); stop turning for ~1s to select. Plain rotation
+  is still volume; Ctrl/Shift/Alt + knob still tune the side LEDs.
+- Caps Word: press both Shifts together; caps until the word ends. The
+  Caps key + upper-left side LEDs (lockCaps) glow white while active.
+
 Defaults after any EEPROM reset: red base (hue 0) + white typing heatmap.
 Caps Lock still overrides everything to white; side LEDs follow the knob
 color (Ctrl/Shift/Alt + knob = hue/sat/brightness).
