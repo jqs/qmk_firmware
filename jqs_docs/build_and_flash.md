@@ -93,10 +93,18 @@ make gmmk/numpad:jqs:flash    # flash
 ```
 
 The Numpad's WB32F3G71 MCU flashes with `wb32-dfu-updater_cli` (installed via
-`brew install wb32-dfu-updater_cli`), **not** dfu-util. Bootloader entry:
-Fn+`.` on the numpad, or hold the NUM key while plugging in (bootmagic — also
-resets EEPROM). The numpad keymap has no VIA, so a plain reflash always applies
-keymap changes; no EEPROM-reset dance needed.
+`brew install wb32-dfu-updater_cli`), **not** dfu-util.
+
+Bootloader entry depends on what's currently on the board:
+
+- **First flash (factory Glorious CORE firmware)**: hold **Enter + `+` (Plus)**
+  while plugging in the USB. Bootmagic doesn't exist yet — it's a QMK feature.
+- **Once QMK is on it**: Fn+`.` (QK_BOOT), or hold the NUM key while plugging
+  in (bootmagic — also resets EEPROM).
+- **Last resort**: reset pinhole under the `0` keycap — press while inserting USB.
+
+The numpad keymap has no VIA, so a plain reflash always applies keymap changes;
+no EEPROM-reset dance needed.
 
 ## Keeping the fork up to date
 
