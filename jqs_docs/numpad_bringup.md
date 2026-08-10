@@ -31,7 +31,20 @@ be deleted once the symlinked setup has proven itself.
 - Fn layer mirrors the Pro's philosophy: hue/sat/val up on 7/8/9, down on
   4/5/6, effect controls on `/` `*` `-`, NumLock on Fn+0, bootloader on Fn+`.`.
 
+## Lessons from first flash
+
+- **First flash from Glorious CORE**: hold Enter + `+` while plugging in USB —
+  bootmagic (hold NUM) only exists once QMK is on the board.
+- **Encoder taps need pacing**: `tap_code16(C(KC_EQL))` from an encoder
+  callback reached hosts as a bare `=` — the mod and key land too close
+  together. Fix: `#define TAP_CODE_DELAY 10` + hold Ctrl as a real mod around a
+  plain `tap_code()`. Applies to any future encoder that sends modified keys.
+- Terminals strip Ctrl from punctuation (no control code for `=`), so the
+  shell printing `=`/`-` is normal even when zoom works everywhere else.
+
 ## Verification
 
 - `make gmmk/numpad:jqs` builds clean (42 KB bin).
 - Pro keymap rebuilt identically through its new Katnick symlink.
+- Confirmed on hardware: red/white heatmap, NumLock indicator, zoom encoder
+  with Ctrl+0 reset push, MIDI slider.
