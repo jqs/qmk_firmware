@@ -1,6 +1,12 @@
-# Build & flash: GMMK Pro (REV1, ANSI)
+# Build & flash: GMMK Pro (REV1, ANSI) + GMMK Numpad
 
-Keymap lives at `keyboards/gmmk/pro/rev1/ansi/keymaps/jqs/`.
+Keymap sources live in `~/Katnick/keyb/` and are symlinked into the QMK tree:
+
+| Board | QMK path (symlink) | Katnick source |
+|---|---|---|
+| GMMK Pro | `keyboards/gmmk/pro/rev1/ansi/keymaps/jqs` | `~/Katnick/keyb/gmmk_pro_ansi/` |
+| GMMK Numpad | `keyboards/gmmk/numpad/keymaps/jqs` | `~/Katnick/keyb/gmmk_numpad/jqs/` |
+| Drop TheKey | `keyboards/drop/thekey/keymaps/jqs` | `~/Katnick/keyb/thekey/jqs/` |
 
 ## One-time environment (already set up on this machine, 2026-07-31)
 
@@ -77,6 +83,20 @@ installs them to `/etc/udev/rules.d/` and `/usr/lib/udev/`, and reloads udev):
 ```bash
 util/install_udev.sh
 ```
+
+## GMMK Numpad
+
+```bash
+source jqs_docs/env.sh
+make gmmk/numpad:jqs          # build -> gmmk_numpad_jqs.bin
+make gmmk/numpad:jqs:flash    # flash
+```
+
+The Numpad's WB32F3G71 MCU flashes with `wb32-dfu-updater_cli` (installed via
+`brew install wb32-dfu-updater_cli`), **not** dfu-util. Bootloader entry:
+Fn+`.` on the numpad, or hold the NUM key while plugging in (bootmagic — also
+resets EEPROM). The numpad keymap has no VIA, so a plain reflash always applies
+keymap changes; no EEPROM-reset dance needed.
 
 ## Keeping the fork up to date
 
